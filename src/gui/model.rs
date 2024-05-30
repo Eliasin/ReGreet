@@ -31,7 +31,6 @@ use crate::sysutil::SysUtil;
 
 use super::messages::{CommandMsg, UserSessInfo};
 
-pub(super) const DEFAULT_MSG: &str = "Welcome back!";
 const ERROR_MSG_CLEAR_DELAY: u64 = 5;
 
 #[derive(PartialEq)]
@@ -96,7 +95,7 @@ pub struct Greeter {
 impl Greeter {
     pub(super) async fn new(config_path: &Path) -> Self {
         let updates = Updates {
-            message: DEFAULT_MSG.to_string(),
+            message: String::new(),
             error: None,
             input: String::new(),
             manual_user_mode: false,
@@ -210,7 +209,7 @@ impl Greeter {
         };
         self.updates.set_input(String::new());
         self.updates.set_input_mode(InputMode::None);
-        self.updates.set_message(DEFAULT_MSG.to_string());
+        self.updates.set_message(self.config.get_default_message())
     }
 
     /// Create a greetd session, i.e. start a login attempt for the current user.
@@ -315,7 +314,7 @@ impl Greeter {
                         // Greetd has sent an error message that should be displayed and logged
                         self.updates.set_input_mode(InputMode::None);
                         // Reset outdated info message, if any
-                        self.updates.set_message(DEFAULT_MSG.to_string());
+                        self.updates.set_message(self.config.get_default_message());
                         self.display_error(
                             sender,
                             &capitalize(&auth_message),

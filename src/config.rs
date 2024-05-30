@@ -12,6 +12,16 @@ use serde::{Deserialize, Serialize};
 use crate::constants::{POWEROFF_CMD, REBOOT_CMD};
 use crate::tomlutils::load_toml;
 
+#[derive(Default, Deserialize, Serialize)]
+pub struct AppearanceSettings {
+    #[serde(default = "default_message")]
+    pub default_msg: String,
+}
+
+fn default_message() -> String {
+    String::from("Welcome back!")
+}
+
 /// Struct holding all supported GTK settings
 #[derive(Default, Deserialize, Serialize)]
 pub struct GtkSettings {
@@ -76,6 +86,8 @@ fn default_poweroff_command() -> Vec<String> {
 #[derive(Default, Deserialize, Serialize)]
 pub struct Config {
     #[serde(default)]
+    appearance: AppearanceSettings,
+    #[serde(default)]
     env: HashMap<String, String>,
     #[serde(default)]
     background: Background,
@@ -109,5 +121,9 @@ impl Config {
 
     pub fn get_sys_commands(&self) -> &SystemCommands {
         &self.commands
+    }
+
+    pub fn get_default_message(&self) -> String {
+        self.appearance.default_msg.clone()
     }
 }
